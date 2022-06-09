@@ -4,7 +4,6 @@ import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
 import { rest } from "msw";
-import "whatwg-fetch"
 
 describe("Sign Up Page", () => {
   describe("Layout", () => {
