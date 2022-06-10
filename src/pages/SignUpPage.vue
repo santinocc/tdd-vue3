@@ -7,22 +7,44 @@
       <div class="card-body">
         <div class="mb-3">
           <label for="username" class="form-label">Username</label>
-          <input id="username" v-model="username" class="form-control"/>
-        </div>  
+          <input id="username" v-model="username" class="form-control" />
+        </div>
         <div class="mb-3">
           <label for="e-mail" class="form-label">E-mail</label>
-          <input id="e-mail" v-model="email" class="form-control"/>
+          <input id="e-mail" v-model="email" class="form-control" />
         </div>
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>
-          <input id="password" type="password" v-model="password"  class="form-control"/>
+          <input
+            id="password"
+            type="password"
+            v-model="password"
+            class="form-control"
+          />
         </div>
         <div class="mb-3">
-          <label for="password-repeat" class="form-label">Password Repeat</label>
-          <input id="password-repeat" type="password" v-model="passwordRepeat" class="form-control"/>
+          <label for="password-repeat" class="form-label"
+            >Password Repeat</label
+          >
+          <input
+            id="password-repeat"
+            type="password"
+            v-model="passwordRepeat"
+            class="form-control"
+          />
         </div>
         <div class="text-center">
-          <button class="btn btn-primary" :disabled="isDisabled" @click.prevent="submit">Sign Up</button>
+          <button
+            class="btn btn-primary"
+            :disabled="isDisabled || disabled"
+            @click.prevent="submit"
+          >
+            <span v-if="apiProgress"
+              class="spinner-border spinner-border-sm"
+              role="status"
+            ></span>
+            Sign Up
+          </button>
         </div>
       </div>
     </form>
@@ -35,26 +57,31 @@ export default {
   name: "SignUpPage",
   data() {
     return {
-      username: '',
-      email: '',
-      password: '',
-      passwordRepeat: '',
+      disabled: false,
+      username: "",
+      email: "",
+      password: "",
+      passwordRepeat: "",
+      apiProgress: false
     };
   },
   methods: {
-    submit(){
-      axios.post("/api/1.0/users",{
+    submit() {
+      this.disabled = true;
+      this.apiProgress = true;
+      axios.post("/api/1.0/users", {
         username: this.username,
         email: this.email,
-        password: this.password
-      })
+        password: this.password,
+      });
     },
   },
   computed: {
-    isDisabled(){
-      console.log("isDisabledComputed method is running");
-      return this.password && this.passwordRepeat ? this.password !== this.passwordRepeat : true;
+    isDisabled() {
+      return this.password && this.passwordRepeat
+        ? this.password !== this.passwordRepeat
+        : true;
     },
-  }
-}
+  },
+};
 </script>
