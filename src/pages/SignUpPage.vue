@@ -8,6 +8,7 @@
         <div class="mb-3">
           <label for="username" class="form-label">Username</label>
           <input id="username" v-model="username" class="form-control" />
+          <span>{{errors.username}}</span>
         </div>
         <div class="mb-3">
           <label for="e-mail" class="form-label">E-mail</label>
@@ -67,19 +68,25 @@ export default {
       passwordRepeat: "",
       apiProgress: false,
       signUpSuccess: false,
+      errors: {}
     };
   },
   methods: {
     submit() {
       this.disabled = true;
       this.apiProgress = true;
-      axios.post("/api/1.0/users", {
-        username: this.username,
-        email: this.email,
-        password: this.password,
-      }).then(() => {
-        this.signUpSuccess = true;
-      }).catch(() => {})
+      axios
+        .post("/api/1.0/users", {
+          username: this.username,
+          email: this.email,
+          password: this.password,
+        }).then(() => {
+          this.signUpSuccess = true;
+        }).catch((error) => {
+          if(error.response.status == 400){
+            this.errors = error.response.data.validationErrors
+          }
+        })
     },
   },
   computed: {
