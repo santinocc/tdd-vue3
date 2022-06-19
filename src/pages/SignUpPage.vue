@@ -5,11 +5,12 @@
         <h1 class="text-center">Sign Up</h1>
       </div>
       <div class="card-body">
-        <div class="mb-3">
-          <label for="username" class="form-label">Username</label>
-          <input id="username" v-model="username" class="form-control" />
-          <span>{{errors.username}}</span>
-        </div>
+        <Input
+          id="username"
+          label="Username"
+          :help="errors.username"
+          v-model="username"
+        />
         <div class="mb-3">
           <label for="e-mail" class="form-label">E-mail</label>
           <input id="e-mail" v-model="email" class="form-control" />
@@ -40,7 +41,8 @@
             :disabled="isDisabled || apiProgress"
             @click.prevent="submit"
           >
-            <span v-if="apiProgress"
+            <span
+              v-if="apiProgress"
               class="spinner-border spinner-border-sm"
               role="status"
             ></span>
@@ -50,15 +52,19 @@
       </div>
     </form>
     <div class="alert alert-success mt-3" v-else>
-    Please check your e-mail to activate your account
+      Please check your e-mail to activate your account
     </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import Input from "../components/Input";
 export default {
   name: "SignUpPage",
+  components: {
+    Input,
+  },
   data() {
     return {
       username: "",
@@ -67,7 +73,7 @@ export default {
       passwordRepeat: "",
       apiProgress: false,
       signUpSuccess: false,
-      errors: {}
+      errors: {},
     };
   },
   methods: {
@@ -78,14 +84,16 @@ export default {
           username: this.username,
           email: this.email,
           password: this.password,
-        }).then(() => {
+        })
+        .then(() => {
           this.signUpSuccess = true;
-        }).catch((error) => {
-          if(error.response.status == 400){
-            this.errors = error.response.data.validationErrors
+        })
+        .catch((error) => {
+          if (error.response.status == 400) {
+            this.errors = error.response.data.validationErrors;
           }
           this.apiProgress = false;
-        })
+        });
     },
   },
   computed: {
