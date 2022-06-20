@@ -74,10 +74,10 @@ describe("Sign Up Page", () => {
 
     afterAll(() => server.close())
 
-    let button, passwordInput, passwordRepeatInput;
+    let button, passwordInput, passwordRepeatInput, usernameInput;
     const setup = async () => {
       render(SignUpPage);
-      const usernameInput = screen.queryByLabelText("Username");
+      usernameInput = screen.queryByLabelText("Username");
       const emailInput = screen.queryByLabelText("E-mail");
       passwordInput = screen.queryByLabelText("Password");
       passwordRepeatInput = screen.queryByLabelText("Password Repeat");
@@ -192,7 +192,7 @@ describe("Sign Up Page", () => {
       field         | message
       ${'username'} | ${'Username cannot be null'}
       ${'email'}    | ${'E-mail cannot be null'}
-      ${'password'}    | ${'Password cannot be null'}
+      ${'password'} | ${'Password cannot be null'}
     `("displays $message for field $field", async ({ field, message }) => {
       server.use(generateValidationError(field,message));
 
@@ -235,6 +235,24 @@ describe("Sign Up Page", () => {
       await userEvent.type(passwordRepeatInput, "P4ss2");
       const text = await screen.findByText("Password mismatch");
       expect(text).toBeInTheDocument();
-    })
+    });
+    it.each`
+    field         | message                       | label
+    ${'username'} | ${'Username cannot be null'}  | ${"Username"}
+    ${'email'}    | ${'E-mail cannot be null'}    | ${"E-mail"}
+    ${'password'} | ${'Password cannot be null'}  | ${"Password"}
+    `("clears validation error after field $field is updated", async ({field, message, label}) => {
+      server.use(generateValidationError(field, message)
+    );
+
+      await setup();
+
+      await userEvent.click(button);
+
+      const text = await screen.findByText(message);
+      const input = screen.queryByLabelText(label);
+      await userEvent.type(input, "updated");
+      expect(text).not.toBeInTheDocument();
+    });
   });
 });
