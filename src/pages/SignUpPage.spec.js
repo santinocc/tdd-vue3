@@ -74,13 +74,13 @@ describe("Sign Up Page", () => {
 
     afterAll(() => server.close())
 
-    let button;
+    let button, passwordInput, passwordRepeatInput;
     const setup = async () => {
       render(SignUpPage);
       const usernameInput = screen.queryByLabelText("Username");
       const emailInput = screen.queryByLabelText("E-mail");
-      const passwordInput = screen.queryByLabelText("Password");
-      const passwordRepeatInput = screen.queryByLabelText("Password Repeat");
+      passwordInput = screen.queryByLabelText("Password");
+      passwordRepeatInput = screen.queryByLabelText("Password Repeat");
       button = screen.queryByRole("button", { name: "Sign Up" });
       await userEvent.type(usernameInput, "User1");
       await userEvent.type(emailInput, "user1@mail.com");
@@ -228,5 +228,13 @@ describe("Sign Up Page", () => {
       );
       expect(button).toBeEnabled();
     });
+    it("displays mismatch message for password repeat input", async () => {
+      await setup();
+
+      await userEvent.type(passwordInput, "P4ss1");
+      await userEvent.type(passwordRepeatInput, "P4ss2");
+      const text = await screen.findByText("Password mismatch");
+      expect(text).toBeInTheDocument();
+    })
   });
 });

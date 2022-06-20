@@ -24,26 +24,13 @@
           v-model="password"
           type="password"
         />
-        <!-- <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input
-            id="password"
-            type="password"
-            v-model="password"
-            class="form-control"
-          />
-        </div> -->
-        <div class="mb-3">
-          <label for="password-repeat" class="form-label"
-            >Password Repeat</label
-          >
-          <input
-            id="password-repeat"
-            type="password"
-            v-model="passwordRepeat"
-            class="form-control"
-          />
-        </div>
+        <Input
+          id="password-repeat"
+          label="Password Repeat"
+          :help="hasPasswordMismatch ? 'Password mismatch' : '' "
+          v-model="passwordRepeat"
+          type="password"
+        />
         <div class="text-center">
           <button
             class="btn btn-primary"
@@ -111,6 +98,9 @@ export default {
         ? this.password !== this.passwordRepeat
         : true;
     },
+    hasPasswordMismatch() {
+      return this.password !== this.passwordRepeat;
+    }
   },
 };
 </script>
