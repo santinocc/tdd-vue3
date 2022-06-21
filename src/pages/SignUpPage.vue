@@ -2,32 +2,32 @@
   <div class="col-lg-6 offset-lg-3 col-md-8 offset-lg-2">
     <form class="card mt-5" data-testid="form-sign-up" v-if="!signUpSuccess">
       <div class="card-header">
-        <h1 class="text-center">Sign Up</h1>
+        <h1 class="text-center">{{ $t("signUp") }}</h1>
       </div>
       <div class="card-body">
         <Input
           id="username"
-          label="Username"
+          :label="$t('username')"
           :help="errors.username"
           v-model="username"
         />
         <Input
           id="e-mail"
-          label="E-mail"
+          :label="$t('email')"
           :help="errors.email"
           v-model="email"
         />
         <Input
           id="password"
-          label="Password"
+          :label="$t('password')"
           :help="errors.password"
           v-model="password"
           type="password"
         />
         <Input
           id="password-repeat"
-          label="Password Repeat"
-          :help="hasPasswordMismatch ? 'Password mismatch' : '' "
+          :label="$t('passwordRepeat')"
+          :help="hasPasswordMismatch ? 'Password mismatch' : ''"
           v-model="passwordRepeat"
           type="password"
         />
@@ -42,7 +42,7 @@
               class="spinner-border spinner-border-sm"
               role="status"
             ></span>
-            Sign Up
+            {{ $t("signUp") }}
           </button>
         </div>
       </div>
@@ -103,15 +103,15 @@ export default {
     },
   },
   watch: {
-    username(){
+    username() {
       delete this.errors.username;
     },
-    email(){
+    email() {
       delete this.errors.email;
     },
-    password(){
+    password() {
       delete this.errors.password;
-    }
-  }
+    },
+  },
 };
 </script>
