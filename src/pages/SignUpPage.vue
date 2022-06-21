@@ -48,10 +48,9 @@
       </div>
     </form>
     <div class="alert alert-success mt-3" v-else>
-      Please check your e-mail to activate your account
+      {{ $t("accountActivationNotification") }}
     </div>
   </div>
- 
 </template>
 
 <script>
@@ -77,11 +76,19 @@ export default {
     submit() {
       this.apiProgress = true;
       axios
-        .post("/api/1.0/users", {
-          username: this.username,
-          email: this.email,
-          password: this.password,
-        })
+        .post(
+          "/api/1.0/users",
+          {
+            username: this.username,
+            email: this.email,
+            password: this.password,
+          },
+          {
+            headers: {
+              "Accept-Language": this.$i18n.locale,
+            },
+          }
+        )
         .then(() => {
           this.signUpSuccess = true;
         })
@@ -116,4 +123,3 @@ export default {
   },
 };
 </script>
-
