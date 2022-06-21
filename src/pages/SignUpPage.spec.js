@@ -7,6 +7,7 @@ import { rest } from "msw";
 import i18n from "../locales/i18n";
 import en from '../locales/en.json';
 import es from '../locales/es.json';
+import LanguageSelector from '../components/LanguageSelector.vue';
 
 describe("Sign Up Page", () => {
   describe("Layout", () => {
@@ -272,15 +273,34 @@ describe("Sign Up Page", () => {
     });
   });
   describe("Internationalization", () => {
+    let spanishLanguage, englishLanguage; 
     const setup = () => {
-      render(SignUpPage, {
+      const app = {
+        components: {
+          SignUpPage,
+          LanguageSelector,
+        },
+        template: `
+        <SignUpPage />
+        <LanguageSelector />
+        `
+      };
+
+      render(app, {
         global: {
           plugins: [i18n]
         },
       });
-    }
+      spanishLanguage = screen.queryByTitle("Spanish");
+      englishLanguage = screen.queryByTitle("English");
+    };
+
+    afterEach(() => {
+      i18n.global.locale = "en"
+    });
     it("initially displays all text in English", async () => {
       setup();
+      screen.debug();
       expect(screen.queryByRole("heading", { name: en.signUp })).toBeInTheDocument();
       expect(screen.queryByRole("button", { name: en.signUp })).toBeInTheDocument();
       expect(screen.queryByLabelText(en.username)).toBeInTheDocument();
@@ -291,8 +311,7 @@ describe("Sign Up Page", () => {
     it("displays all text in Spanish after selecting that language", async () => {
       setup();
 
-      const spanish = screen.queryByTitle("Spanish")
-      await userEvent.click(spanish);
+      await userEvent.click(spanishLanguage);
 
       expect(screen.queryByRole("heading", { name: es.signUp })).toBeInTheDocument();
       expect(screen.queryByRole("button", { name: es.signUp })).toBeInTheDocument();
@@ -304,11 +323,9 @@ describe("Sign Up Page", () => {
     it("displays all text in English after page is translated to Spanish", async () => {
       setup();
 
-      const spanish = screen.queryByTitle("Spanish")
-      await userEvent.click(spanish);
+      await userEvent.click(spanishLanguage);
 
-      const english = screen.queryByTitle("English")
-      await userEvent.click(english);
+      await userEvent.click(englishLanguage);
 
       expect(screen.queryByRole("heading", { name: en.signUp })).toBeInTheDocument();
       expect(screen.queryByRole("button", { name: en.signUp })).toBeInTheDocument();
