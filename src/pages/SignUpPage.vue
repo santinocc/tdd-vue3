@@ -27,7 +27,7 @@
         <Input
           id="password-repeat"
           :label="$t('passwordRepeat')"
-          :help="hasPasswordMismatch ? 'Password mismatch' : ''"
+          :help="hasPasswordMismatch ? $t('passwordMismatchValidation') : ''"
           v-model="passwordRepeat"
           type="password"
         />

@@ -273,7 +273,7 @@ describe("Sign Up Page", () => {
     });
   });
   describe("Internationalization", () => {
-    let spanishLanguage, englishLanguage; 
+    let spanishLanguage, englishLanguage, password, passwordRepeat; 
     const setup = () => {
       const app = {
         components: {
@@ -293,6 +293,8 @@ describe("Sign Up Page", () => {
       });
       spanishLanguage = screen.queryByTitle("Spanish");
       englishLanguage = screen.queryByTitle("English");
+      password = screen.queryByLabelText(en.password);
+      passwordRepeat = screen.queryByLabelText(en.passwordRepeat);
     };
 
     afterEach(() => {
@@ -300,7 +302,6 @@ describe("Sign Up Page", () => {
     });
     it("initially displays all text in English", async () => {
       setup();
-      screen.debug();
       expect(screen.queryByRole("heading", { name: en.signUp })).toBeInTheDocument();
       expect(screen.queryByRole("button", { name: en.signUp })).toBeInTheDocument();
       expect(screen.queryByLabelText(en.username)).toBeInTheDocument();
@@ -334,5 +335,13 @@ describe("Sign Up Page", () => {
       expect(screen.queryByLabelText(en.password)).toBeInTheDocument();
       expect(screen.queryByLabelText(en.passwordRepeat)).toBeInTheDocument();
     });
-  })
+    it("displays password mismatch validation in Spanish", async () => {
+      setup();
+      await userEvent.click(spanishLanguage);
+      await userEvent.type(password, "P4ssword");
+      await userEvent.type(passwordRepeat, "N3wP4ss");
+      const validation = screen.queryByText(es.passwordMismatchValidation);
+      expect(validation).toBeInTheDocument();
+    })
+  });
 });
