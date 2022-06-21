@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import { signUp } from "../api/apiCalls";
 import Input from "../components/Input";
 export default {
   name: "SignUpPage",
@@ -73,31 +73,21 @@ export default {
     };
   },
   methods: {
-    submit() {
+    async submit() {
       this.apiProgress = true;
-      axios
-        .post(
-          "/api/1.0/users",
-          {
-            username: this.username,
-            email: this.email,
-            password: this.password,
-          },
-          {
-            headers: {
-              "Accept-Language": this.$i18n.locale,
-            },
-          }
-        )
-        .then(() => {
-          this.signUpSuccess = true;
+      try {
+        await signUp({
+          username: this.username,
+          email: this.email,
+          password: this.password,
         })
-        .catch((error) => {
-          if (error.response.status == 400) {
-            this.errors = error.response.data.validationErrors;
-          }
-          this.apiProgress = false;
-        });
+        this.signUpSuccess = true;
+      } catch (error) {
+        if (error.response.status == 400) {
+          this.errors = error.response.data.validationErrors;
+        }
+        this.apiProgress = false;
+      }
     },
   },
   computed: {
