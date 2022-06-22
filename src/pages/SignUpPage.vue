@@ -80,10 +80,10 @@ export default {
           username: this.username,
           email: this.email,
           password: this.password,
-        })
+        });
         this.signUpSuccess = true;
       } catch (error) {
-        if (error.response.status == 400) {
+        if (error.response.status === 400) {
           this.errors = error.response.data.validationErrors;
         }
         this.apiProgress = false;

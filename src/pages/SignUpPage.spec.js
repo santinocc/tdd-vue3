@@ -1,13 +1,12 @@
 import SignUpPage from "./SignUpPage.vue";
 import { render, screen, waitFor } from "@testing-library/vue";
-import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
 import { rest } from "msw";
 import i18n from "../locales/i18n";
-import en from '../locales/en.json';
-import es from '../locales/es.json';
-import LanguageSelector from '../components/LanguageSelector.vue';
+import en from "../locales/en.json";
+import es from "../locales/es.json";
+import LanguageSelector from "../components/LanguageSelector.vue";
 
 let requestBody;
 let counter = 0;
@@ -21,25 +20,24 @@ const server = setupServer(
   })
 );
 
-beforeAll(() => server.listen())
+beforeAll(() => server.listen());
 
 beforeEach(() => {
   counter = 0;
   server.resetHandlers();
-})
+});
 
-afterAll(() => server.close())
+afterAll(() => server.close());
 
 describe("Sign Up Page", () => {
   describe("Layout", () => {
-
     const setup = () => {
       render(SignUpPage, {
         global: {
-          plugins: [i18n]
-        }
+          plugins: [i18n],
+        },
       });
-    }
+    };
 
     it("has Sign Up Header", () => {
       setup();
@@ -88,13 +86,12 @@ describe("Sign Up Page", () => {
     });
   });
   describe("Interactions", () => {
-
     let button, passwordInput, passwordRepeatInput, usernameInput;
     const setup = async () => {
       render(SignUpPage, {
         global: {
-          plugins: [i18n]
-        }
+          plugins: [i18n],
+        },
       });
       usernameInput = screen.queryByLabelText("Username");
       const emailInput = screen.queryByLabelText("E-mail");
@@ -110,22 +107,21 @@ describe("Sign Up Page", () => {
     const generateValidationError = (field, message) => {
       return rest.post("/api/1.0/users", (req, res, ctx) => {
         return res(
-          ctx.status(400), 
+          ctx.status(400),
           ctx.json({
             validationErrors: {
               [field]: message,
-            }
-        }));
-      })
-    }
+            },
+          })
+        );
+      });
+    };
 
     it("enables the button when the password and password repeat fields have same value", async () => {
       await setup();
       expect(button).toBeEnabled();
     });
-    it("sends username, email and password to backend after clicking the button", 
-    async () => {
-      
+    it("sends username, email and password to backend after clicking the button", async () => {
       await setup();
       await userEvent.click(button);
       await screen.findByText(
@@ -135,12 +131,10 @@ describe("Sign Up Page", () => {
       expect(requestBody).toEqual({
         username: "User1",
         email: "user1@mail.com",
-        password: "P4ssword"
+        password: "P4ssword",
       });
     });
-    it("does not allow clicking to the button when there is an ongoing api call", 
-    async () => {
-      
+    it("does not allow clicking to the button when there is an ongoing api call", async () => {
       await setup();
       await userEvent.click(button);
 
@@ -163,12 +157,13 @@ describe("Sign Up Page", () => {
       expect(spinner).not.toBeInTheDocument();
     });
     it("displays account activation information after successful sign up request", async () => {
-
       await setup();
 
       await userEvent.click(button);
 
-      const text = await screen.findByText("Please check your e-mail to activate your account");
+      const text = await screen.findByText(
+        "Please check your e-mail to activate your account"
+      );
       expect(text).toBeInTheDocument();
     });
     it("does not display account activation message before sign up request", async () => {
@@ -179,7 +174,6 @@ describe("Sign Up Page", () => {
       expect(text).not.toBeInTheDocument();
     });
     it("does not displays account activation information after failing sign up request", async () => {
-      
       server.use(
         rest.post("/api/1.0/users", (req, res, ctx) => {
           return res.once(ctx.status(400));
@@ -196,7 +190,6 @@ describe("Sign Up Page", () => {
       expect(text).not.toBeInTheDocument();
     });
     it("hides sign up form after successful sign up request", async () => {
-
       await setup();
       const button = screen.queryByRole("button", { name: "Sign Up" });
 
@@ -205,15 +198,15 @@ describe("Sign Up Page", () => {
       await userEvent.click(button);
       await waitFor(() => {
         expect(form).not.toBeInTheDocument();
-      })
+      });
     });
     it.each`
       field         | message
-      ${'username'} | ${'Username cannot be null'}
-      ${'email'}    | ${'E-mail cannot be null'}
-      ${'password'} | ${'Password cannot be null'}
+      ${"username"} | ${"Username cannot be null"}
+      ${"email"}    | ${"E-mail cannot be null"}
+      ${"password"} | ${"Password cannot be null"}
     `("displays $message for field $field", async ({ field, message }) => {
-      server.use(generateValidationError(field,message));
+      server.use(generateValidationError(field, message));
 
       await setup();
 
@@ -223,28 +216,28 @@ describe("Sign Up Page", () => {
       expect(text).toBeInTheDocument();
     });
     it("hides spinner after error response received", async () => {
-      server.use(generateValidationError("username", "Username cannot be null"));
+      server.use(
+        generateValidationError("username", "Username cannot be null")
+      );
 
       await setup();
 
       await userEvent.click(button);
 
-      await screen.findByText(
-        "Username cannot be null"
-      );
+      await screen.findByText("Username cannot be null");
       const spinner = screen.queryByRole("status");
       expect(spinner).not.toBeInTheDocument();
     });
     it("enables the button after error response received", async () => {
-      server.use(generateValidationError("username", "Username cannot be null"));
+      server.use(
+        generateValidationError("username", "Username cannot be null")
+      );
 
       await setup();
 
       await userEvent.click(button);
 
-      await screen.findByText(
-        "Username cannot be null"
-      );
+      await screen.findByText("Username cannot be null");
       expect(button).toBeEnabled();
     });
     it("displays mismatch message for password repeat input", async () => {
@@ -256,26 +249,34 @@ describe("Sign Up Page", () => {
       expect(text).toBeInTheDocument();
     });
     it.each`
-    field         | message                       | label
-    ${'username'} | ${'Username cannot be null'}  | ${"Username"}
-    ${'email'}    | ${'E-mail cannot be null'}    | ${"E-mail"}
-    ${'password'} | ${'Password cannot be null'}  | ${"Password"}
-    `("clears validation error after field $field is updated", async ({field, message, label}) => {
-      server.use(generateValidationError(field, message)
+      field         | message                      | label
+      ${"username"} | ${"Username cannot be null"} | ${"Username"}
+      ${"email"}    | ${"E-mail cannot be null"}   | ${"E-mail"}
+      ${"password"} | ${"Password cannot be null"} | ${"Password"}
+    `(
+      "clears validation error after field $field is updated",
+      async ({ field, message, label }) => {
+        server.use(generateValidationError(field, message));
+
+        await setup();
+
+        await userEvent.click(button);
+
+        const text = await screen.findByText(message);
+        const input = screen.queryByLabelText(label);
+        await userEvent.type(input, "updated");
+        expect(text).not.toBeInTheDocument();
+      }
     );
-
-      await setup();
-
-      await userEvent.click(button);
-
-      const text = await screen.findByText(message);
-      const input = screen.queryByLabelText(label);
-      await userEvent.type(input, "updated");
-      expect(text).not.toBeInTheDocument();
-    });
   });
   describe("Internationalization", () => {
-    let spanishLanguage, englishLanguage, username, email, password, passwordRepeat, button; 
+    let spanishLanguage,
+      englishLanguage,
+      username,
+      email,
+      password,
+      passwordRepeat,
+      button;
     const setup = () => {
       const app = {
         components: {
@@ -285,12 +286,12 @@ describe("Sign Up Page", () => {
         template: `
         <SignUpPage />
         <LanguageSelector />
-        `
+        `,
       };
 
       render(app, {
         global: {
-          plugins: [i18n]
+          plugins: [i18n],
         },
       });
       spanishLanguage = screen.queryByTitle("Spanish");
@@ -302,13 +303,14 @@ describe("Sign Up Page", () => {
       button = screen.queryByRole("button", { name: en.signUp });
     };
 
-    afterEach(() => {
-      i18n.global.locale = "en"
-    });
     it("initially displays all text in English", async () => {
       setup();
-      expect(screen.queryByRole("heading", { name: en.signUp })).toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: en.signUp })).toBeInTheDocument();
+      expect(
+        screen.queryByRole("heading", { name: en.signUp })
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: en.signUp })
+      ).toBeInTheDocument();
       expect(screen.queryByLabelText(en.username)).toBeInTheDocument();
       expect(screen.queryByLabelText(en.email)).toBeInTheDocument();
       expect(screen.queryByLabelText(en.password)).toBeInTheDocument();
@@ -319,8 +321,12 @@ describe("Sign Up Page", () => {
 
       await userEvent.click(spanishLanguage);
 
-      expect(screen.queryByRole("heading", { name: es.signUp })).toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: es.signUp })).toBeInTheDocument();
+      expect(
+        screen.queryByRole("heading", { name: es.signUp })
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: es.signUp })
+      ).toBeInTheDocument();
       expect(screen.queryByLabelText(es.username)).toBeInTheDocument();
       expect(screen.queryByLabelText(es.email)).toBeInTheDocument();
       expect(screen.queryByLabelText(es.password)).toBeInTheDocument();
@@ -333,8 +339,12 @@ describe("Sign Up Page", () => {
 
       await userEvent.click(englishLanguage);
 
-      expect(screen.queryByRole("heading", { name: en.signUp })).toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: en.signUp })).toBeInTheDocument();
+      expect(
+        screen.queryByRole("heading", { name: en.signUp })
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: en.signUp })
+      ).toBeInTheDocument();
       expect(screen.queryByLabelText(en.username)).toBeInTheDocument();
       expect(screen.queryByLabelText(en.email)).toBeInTheDocument();
       expect(screen.queryByLabelText(en.password)).toBeInTheDocument();
@@ -379,7 +389,9 @@ describe("Sign Up Page", () => {
       await userEvent.type(password, "P4ssword");
       await userEvent.type(passwordRepeat, "P4ssword");
       await userEvent.click(button);
-      const accountActivation = await screen.findByText(es.accountActivationNotification);
+      const accountActivation = await screen.findByText(
+        es.accountActivationNotification
+      );
       expect(accountActivation).toBeInTheDocument();
     });
   });
