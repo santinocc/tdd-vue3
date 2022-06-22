@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/vue";
 import App from "./App.vue";
 import i18n from "./locales/i18n";
+import userEvent from "@testing-library/user-event";
 
 const setup = (path) => {
   window.history.pushState({}, "", path);
@@ -43,5 +44,28 @@ describe("Routing", () => {
       expect(page).not.toBeInTheDocument();
     }
   );
-  
+  it.each`
+    targetPage
+    ${"Home"}
+    ${"Sign Up"}
+    ${"Login"}
+  `("has link to $targetPage on NavBar", ({ targetPage }) => {
+    setup("/");
+    const link = screen.queryByRole("link", { name: targetPage });
+    expect(link).toBeInTheDocument();
+  })
+
+  it.each`
+    initialPath  | clickingTo   | visiblePage
+    ${"/"}       | ${"Sign Up"} | ${"signup-page"}
+    ${"/signup"} | ${"Home"}    | ${"home-page"}
+    ${"/"}       | ${"Login"}    | ${"login-page"}
+  `("displays sign up page after clicking sign up link", 
+    async ({ initialPath, clickingTo, visiblePage }) => {
+    setup(initialPath);
+    const link = screen.queryByRole("link", { name: clickingTo });
+    await userEvent.click(link);
+    const page = screen.queryByTestId(visiblePage);
+    expect(page).toBeInTheDocument();
+  })
 });
