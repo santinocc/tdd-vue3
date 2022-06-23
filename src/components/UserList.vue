@@ -7,8 +7,11 @@
       <li
         class="list-group-item list-group-item-action"
         v-for="user in page.content"
+        @click="$router.push('/user/' + user.id)"
       >
-        {{ user.username }}
+        <router-link :to="'/user/' + user.id">
+          {{ user.username }}
+        </router-link>
       </li>
     </ul>
     <div class="card-footer">
@@ -47,3 +50,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+li {
+  cursor: pointer;
+}
+</style>
