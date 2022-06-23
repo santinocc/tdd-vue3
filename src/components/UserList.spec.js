@@ -5,7 +5,16 @@ import { rest } from "msw";
 
 const server = setupServer(
   rest.get("/api/1.0/users", (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(getPage(0, 3)));
+    let page = Number.parseInt(req.url.searchParams.get("page"));
+    let size = Number.parseInt(req.url.searchParams.get("size"));
+    if (Number.isNaN(page)) {
+      page = 0;
+    }
+    if (Number.isNaN(size)) {
+      size = 5;
+    }
+
+    return res(ctx.status(200), ctx.json(getPage(page, size)));
   })
 );
 
