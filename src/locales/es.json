@@ -5,5 +5,8 @@
   "password": "Contraseña",
   "passwordRepeat": "Repetir Contraseña",
   "passwordMismatchValidation": "La Contraseña es diferente",
-  "accountActivationNotification": "Por favor checa tu e-mail para activar tu cuenta"
+  "accountActivationNotification": "Por favor checa tu e-mail para activar tu cuenta",
+  "users": "Usuarios",
+  "nextPage": "siguiente >",
+  "previousPage": "< anterior"
 }

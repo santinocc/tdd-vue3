@@ -4,6 +4,10 @@ import { setupServer } from "msw/node";
 import { rest } from "msw";
 import userEvent from "@testing-library/user-event";
 import router from "../routes/router";
+import en from "../locales/en.json";
+import es from "../locales/es.json";
+import i18n from "../locales/i18n";
+import LanguageSelector from "./LanguageSelector";
 
 const server = setupServer(
   rest.get("/api/1.0/users", (req, res, ctx) => {
@@ -51,9 +55,20 @@ const users = [
 ];
 
 const setup = async () => {
-  render(UserList, {
+  const app = {
+    components: {
+      UserList,
+      LanguageSelector,
+    },
+    template: `
+      <UserList />
+      <LanguageSelector />
+      `,
+  };
+
+  render(app, {
     global: {
-      plugins: [ router ]
+      plugins: [ router, i18n ]
     }
   })
   await router.isReady();
@@ -127,4 +142,27 @@ describe("User List", () => {
     const spinner = screen.queryByRole("status");
     expect(spinner).toBeVisible();
   });
+
+  describe("Internationalization", () => {
+    it("initially displays header and navigation links in english", async () => {
+      await setup();
+      await screen.findByText("user1");
+      await userEvent.click(screen.queryByText("next >"));
+      await screen.findByText("user4");
+      expect(screen.queryByText(en.users)).toBeInTheDocument();
+      expect(screen.queryByText(en.nextPage)).toBeInTheDocument();
+      expect(screen.queryByText(en.previousPage)).toBeInTheDocument();
+    });
+    it("displays header and navigation links in spanish after selecting that language", async () => {
+      await setup();
+      await screen.findByText("user1");
+      await userEvent.click(screen.queryByText("next >"));
+      await screen.findByText("user4");
+      const spanishLanguageSelector = screen.queryByTitle("Spanish");
+      await userEvent.click(spanishLanguageSelector);
+      expect(screen.queryByText(es.users)).toBeInTheDocument();
+      expect(screen.queryByText(es.nextPage)).toBeInTheDocument();
+      expect(screen.queryByText(es.previousPage)).toBeInTheDocument();
+    })
+  })
 })
