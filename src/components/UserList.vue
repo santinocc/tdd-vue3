@@ -8,6 +8,7 @@
         class="list-group-item list-group-item-action"
         v-for="user in page.content"
         @click="$router.push('/user/' + user.id)"
+        :key="user.id"
       >
         <router-link :to="'/user/' + user.id">
           <UserListItem :user="user" />
@@ -15,10 +16,18 @@
       </li>
     </ul>
     <div class="card-footer">
-      <button class="btn btn-outline-secondary btn-sm" @click="loadData(page.page - 1)" v-if="page.page !== 0">
+      <button
+        class="btn btn-outline-secondary btn-sm"
+        @click="loadData(page.page - 1)"
+        v-if="page.page !== 0"
+      >
         &lt; previous
       </button>
-      <button class="btn btn-outline-secondary btn-sm float-end" @click="loadData(page.page + 1)" v-if="page.totalPages > page.page + 1">
+      <button
+        class="btn btn-outline-secondary btn-sm float-end"
+        @click="loadData(page.page + 1)"
+        v-if="page.totalPages > page.page + 1"
+      >
         next &gt;
       </button>
     </div>
@@ -44,13 +53,13 @@ export default {
   },
 
   async mounted() {
-    this.loadData()
+    this.loadData();
   },
   methods: {
     async loadData(pageIndex) {
       const response = await loadUsers(pageIndex);
       this.page = response.data;
-    }
+    },
   },
 };
 </script>
