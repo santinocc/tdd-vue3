@@ -11,12 +11,14 @@
         {{ user.username }}
       </li>
     </ul>
-    <button @click="loadPrevious()" v-if="page.page !== 0">
-      &lt; previous
-    </button>
-    <button @click="loadNext()" v-if="page.totalPages > page.page + 1">
-      next &gt;
-    </button>
+    <div class="card-footer">
+      <button class="btn btn-outline-secondary btn-sm" @click="loadData(page.page - 1)" v-if="page.page !== 0">
+        &lt; previous
+      </button>
+      <button class="btn btn-outline-secondary btn-sm float-end" @click="loadData(page.page + 1)" v-if="page.totalPages > page.page + 1">
+        next &gt;
+      </button>
+    </div>
   </div>
 </template>
 
@@ -35,16 +37,11 @@ export default {
   },
 
   async mounted() {
-    const response = await loadUsers();
-    this.page = response.data;
+    this.loadData()
   },
   methods: {
-    async loadNext() {
-      const response = await loadUsers(this.page.page + 1);
-      this.page = response.data;
-    },
-    async loadPrevious() {
-      const response = await loadUsers(this.page.page - 1);
+    async loadData(pageIndex) {
+      const response = await loadUsers(pageIndex);
       this.page = response.data;
     }
   },
