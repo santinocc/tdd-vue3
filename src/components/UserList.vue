@@ -11,6 +11,12 @@
         {{ user.username }}
       </li>
     </ul>
+    <button @click="loadPrevious()" v-if="page.page !== 0">
+      &lt; previous
+    </button>
+    <button @click="loadNext()" v-if="page.totalPages > page.page + 1">
+      next &gt;
+    </button>
   </div>
 </template>
 
@@ -31,6 +37,16 @@ export default {
   async mounted() {
     const response = await loadUsers();
     this.page = response.data;
+  },
+  methods: {
+    async loadNext() {
+      const response = await loadUsers(this.page.page + 1);
+      this.page = response.data;
+    },
+    async loadPrevious() {
+      const response = await loadUsers(this.page.page - 1);
+      this.page = response.data;
+    }
   },
 };
 </script>
