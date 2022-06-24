@@ -25,21 +25,30 @@ beforeEach(() => {
 
 afterAll(() => server.close());
 
-describe("User Page", () => {
-  it("displays username on page when user is found", async () => {
-    render(UserPage, {
-      global: {
-        mocks: {
-          $route: {
-            params: {
-              id: 1,
-            },
+const setup = () => {
+  render(UserPage, {
+    global: {
+      mocks: {
+        $route: {
+          params: {
+            id: 1,
           },
         },
       },
-    });
+    },
+  });
+}
+
+describe("User Page", () => {
+  it("displays username on page when user is found", async () => {
+    setup();
     await waitFor(() => {
       expect(screen.queryByText("user1")).toBeInTheDocument();
     });
   });
+  it("displays spinner while the api call is in progress", () => {
+    setup();
+    const spinner = screen.queryByRole("status");
+    expect(spinner).toBeInTheDocument();
+  })
 });
