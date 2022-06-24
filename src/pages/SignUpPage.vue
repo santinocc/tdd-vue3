@@ -35,14 +35,13 @@
           type="password"
         />
         <div class="text-center">
-          <button
-            class="btn btn-primary"
-            :disabled="isDisabled || apiProgress"
-            @click.prevent="submit"
+          <ButtonWithProgress
+            :apiProgress="apiProgress"
+            :disabled="isDisabled"
+            :onClick="submit"
           >
-            <Spinner v-if="apiProgress" />
             {{ $t("signUp") }}
-          </button>
+          </ButtonWithProgress>
         </div>
       </div>
     </form>
@@ -53,14 +52,14 @@
 </template>
 
 <script>
-import Spinner from "../components/Spinner";
+import ButtonWithProgress from "../components/ButtonWithProgress";
 import { signUp } from "../api/apiCalls";
 import Input from "../components/Input";
 export default {
   name: "SignUpPage",
   components: {
     Input,
-    Spinner,
+    ButtonWithProgress,
   },
   data() {
     return {
