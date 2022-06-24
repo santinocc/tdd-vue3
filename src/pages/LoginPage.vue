@@ -8,11 +8,7 @@
         <h1 class="text-center">Login</h1>
       </div>
       <div class="card-body">
-        <Input
-          id="e-mail"
-          label="E-mail"
-          v-model="email"
-        />
+        <Input id="e-mail" label="E-mail" v-model="email" />
         <Input
           id="password"
           label="Password"
@@ -20,12 +16,7 @@
           type="password"
         />
         <div class="text-center">
-          <button
-            class="btn btn-primary"
-            disabled
-          >
-            Login
-          </button>
+          <button class="btn btn-primary" :disabled="isDisabled">Login</button>
         </div>
       </div>
     </form>
@@ -35,13 +26,18 @@
 import Input from "../components/Input";
 export default {
   components: {
-    Input
+    Input,
   },
-  data(){
+  data() {
     return {
       email: "",
       password: "",
-    }
-  }
-}
+    };
+  },
+  computed: {
+    isDisabled() {
+      return !(this.email && this.password);
+    },
+  },
+};
 </script>
