@@ -15,10 +15,18 @@
           v-model="password"
           type="password"
         />
+        <div class="alert alert-danger text-center" v-if="failMessage">
+          {{ failMessage }}
+        </div>
         <div class="text-center">
-          <button class="btn btn-primary" :disabled="isDisabled || apiProgress" @click.prevent="submit">
+          <button
+            class="btn btn-primary"
+            :disabled="isDisabled || apiProgress"
+            @click.prevent="submit"
+          >
             <Spinner v-if="apiProgress" />
-            Login</button>
+            Login
+          </button>
         </div>
       </div>
     </form>
@@ -27,7 +35,7 @@
 <script>
 import Input from "../components/Input";
 import Spinner from "../components/Spinner";
-import { login } from '../api/apiCalls';
+import { login } from "../api/apiCalls";
 
 export default {
   components: {
@@ -39,6 +47,7 @@ export default {
       email: "",
       password: "",
       apiProgress: false,
+      failMessage: undefined,
     };
   },
   computed: {
@@ -51,11 +60,19 @@ export default {
       this.apiProgress = true;
       try {
         await login({ email: this.email, password: this.password });
-      } catch (error){
-        //
+      } catch (error) {
+        this.failMessage = error.response.data.message;
       }
       this.apiProgress = false;
-    }
-  }
+    },
+  },
+  watch: {
+    email() {
+      this.failMessage = undefined;
+    },
+    password() {
+      this.failMessage = undefined;
+    },
+  },
 };
 </script>
