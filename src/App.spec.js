@@ -18,7 +18,7 @@ const server = setupServer(
           {
             id: 1,
             username: "user-in-list",
-            email: "user-in-list@email.com",
+            email: "user-in-list@mail.com",
             image: null,
           },
         ],
@@ -27,7 +27,19 @@ const server = setupServer(
         totalPages: 0,
       })
     );
-  })
+  }),
+  rest.get("/api/1.0/users/:id", (req, res, ctx) => {
+    const id = Number.parseInt(req.params.id);
+    return res(
+      ctx.status(200),
+      ctx.json({  
+        id,
+        username: `user${id}`,
+        email: `user${id}@mail.com`,
+        image: null, 
+      })
+    );
+  }),
 );
 
 beforeAll(() => server.listen());
