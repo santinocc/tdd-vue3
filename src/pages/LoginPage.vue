@@ -16,7 +16,9 @@
           type="password"
         />
         <div class="text-center">
-          <button class="btn btn-primary" :disabled="isDisabled">Login</button>
+          <button class="btn btn-primary" :disabled="isDisabled || apiProgress" @click.prevent="submit">
+            <Spinner v-if="apiProgress" />
+            Login</button>
         </div>
       </div>
     </form>
@@ -24,14 +26,19 @@
 </template>
 <script>
 import Input from "../components/Input";
+import Spinner from "../components/Spinner";
+import { login } from '../api/apiCalls';
+
 export default {
   components: {
     Input,
+    Spinner,
   },
   data() {
     return {
       email: "",
       password: "",
+      apiProgress: false,
     };
   },
   computed: {
@@ -39,5 +46,16 @@ export default {
       return !(this.email && this.password);
     },
   },
+  methods: {
+    async submit() {
+      this.apiProgress = true;
+      try {
+        await login({ email: this.email, password: this.password });
+      } catch (error){
+        //
+      }
+      this.apiProgress = false;
+    }
+  }
 };
 </script>
