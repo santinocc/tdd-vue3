@@ -8,5 +8,6 @@
   "accountActivationNotification": "Por favor checa tu e-mail para activar tu cuenta",
   "users": "Usuarios",
   "nextPage": "siguiente >",
-  "previousPage": "< anterior"
+  "previousPage": "< anterior",
+  "login": "Inicia Sesión"
 }
