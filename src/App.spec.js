@@ -32,14 +32,14 @@ const server = setupServer(
     const id = Number.parseInt(req.params.id);
     return res(
       ctx.status(200),
-      ctx.json({  
+      ctx.json({
         id,
         username: `user${id}`,
         email: `user${id}@mail.com`,
-        image: null, 
+        image: null,
       })
     );
-  }),
+  })
 );
 
 beforeAll(() => server.listen());
@@ -140,5 +140,20 @@ describe("Routing", () => {
     await userEvent.click(user);
     const page = await screen.findByTestId("user-page");
     expect(page).toBeInTheDocument();
-  })
+  });
+});
+describe("Login", () => {
+  it("redirects to homepage after succesful login", async () => {
+    server.use(
+      rest.post("/api/1.0/auth", (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json({ username: "user5" }));
+      })
+    );
+    await setup("/login");
+    await userEvent.type(screen.queryByLabelText("E-mail"), "user5@mail.com");
+    await userEvent.type(screen.queryByLabelText("Password"), "P4ssword");
+    await userEvent.click(screen.queryByRole("button", { name: "Login" }));
+    const page = await screen.findByTestId("home-page");
+    expect(page).toBeInTheDocument();
+  });
 });
